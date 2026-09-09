@@ -4,6 +4,7 @@ description: >-
   MANDATORY: Execute during or immediately after creating, serving, or modifying ANY web page, web service, frontend component, or backend API prototype.
   Autonomous Web Quality, Resilience & Security auditor using headless Playwright and Static Source Code scanner.
   Executes automated deep audits on HTTP security headers, cookie lifecycle, browser console/runtime exceptions, form boundary fuzzing, client storage, and source code vulnerabilities (SQLi, XSS, secrets, dangerous functions).
+  Always load alongside human-coding for all web, frontend, backend API, and fullstack projects.
 ---
 
 # TYW Web & Source Code Auditor Skill (tyw-audit)

@@ -91,6 +91,7 @@ const IGNORE_DIRS = new Set([
   "node_modules",
   ".git",
   "vendor",
+  "storage",
   "dist",
   "build",
   ".next",

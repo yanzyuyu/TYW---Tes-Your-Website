@@ -1,0 +1,40 @@
+{
+  "name": "tyw",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Test Your Website - Autonomous Web Quality, Resilience & Security CLI Auditor",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "tyw": "bin/tyw.js"
+  },
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node bin/tyw.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "testing",
+    "security",
+    "playwright",
+    "audit",
+    "fuzzing",
+    "ai-agent",
+    "quality-assurance"
+  ],
+  "author": "yanzyuyu",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^13.1.0",
+    "picocolors": "^1.1.1",
+    "playwright": "^1.50.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.5",
+    "typescript": "^5.7.3"
+  }
+}

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.log
+.env
+.env.local
+playwright-report/
+test-results/
+.cache/
+.agents/
+.agent/
+_agents/
+_agent/

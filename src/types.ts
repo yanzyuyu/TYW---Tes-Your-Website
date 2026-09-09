@@ -8,7 +8,13 @@ export type IssueCategory =
   | "FORM_INTEGRITY"
   | "STORAGE"
   | "HYDRATION"
-  | "STATIC_CODE";
+  | "STATIC_CODE"
+  | "COMMAND_INJECTION"
+  | "PATH_TRAVERSAL"
+  | "INSECURE_DESERIALIZATION"
+  | "WEAK_CRYPTO"
+  | "MEMORY_SAFETY"
+  | "HARDCODED_SECRET";
 
 export interface AuditIssue {
   id: string;
@@ -24,12 +30,18 @@ export interface AuditIssue {
   codeSnippet?: string;
 }
 
+export interface FileAuditStatus {
+  file: string;
+  status: "CLEAN" | "VULNERABLE";
+  issueCount: number;
+}
+
 export interface AuditConfig {
-  url: string;
-  timeoutMs: number;
-  headless: boolean;
-  profile: "full" | "security" | "forms" | "runtime";
-  format: "pretty" | "json";
+  url?: string;
+  timeoutMs?: number;
+  headless?: boolean;
+  profile?: "full" | "security" | "forms" | "runtime" | "code";
+  format?: "pretty" | "json";
   outputFile?: string;
   codeDir?: string;
 }
@@ -56,7 +68,11 @@ export interface AuditReport {
     medium: number;
     low: number;
     info: number;
+    totalFilesScanned?: number;
+    cleanFilesCount?: number;
+    vulnerableFilesCount?: number;
   };
+  fileStatuses?: FileAuditStatus[];
   metadata?: PageMetadata;
   issues: AuditIssue[];
 }

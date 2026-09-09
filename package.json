@@ -1,8 +1,8 @@
 {
   "name": "tyw-cli",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "type": "module",
-  "description": "Test Your Website - Autonomous Web Quality, Resilience & Security CLI Auditor",
+  "description": "Universal Software Quality, Resilience & Security CLI Auditor - Audits Python, Go, Rust, C/C++, Java, Shell, PHP, and Web applications",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {

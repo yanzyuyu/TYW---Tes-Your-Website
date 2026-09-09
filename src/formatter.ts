@@ -31,7 +31,7 @@ export function formatPretty(report: AuditReport): string {
   const divider = pc.dim("─".repeat(64));
 
   lines.push("");
-  lines.push(pc.bold(pc.cyan("=== TYW: Test Your Website - Autonomous Auditor ===")));
+  lines.push(pc.bold(pc.cyan("=== TYW: Universal Quality, Resilience & Security Auditor ===")));
   lines.push(divider);
   if (report.url) {
     lines.push(`${pc.bold("Target URL:")}     ${report.url}`);
@@ -50,18 +50,42 @@ export function formatPretty(report: AuditReport): string {
   lines.push(`${pc.bold("Overall Status:")} ${getStatusBadge(report.status, report.score)}`);
   lines.push(divider);
 
-  lines.push(pc.bold("Summary:"));
-  lines.push(
+  lines.push(pc.bold("Ringkasan Audit:"));
+  let summaryLine =
     `  Total Issues: ${report.summary.total} | ` +
-      `${pc.red(`Critical: ${report.summary.critical}`)} | ` +
-      `${pc.red(`High: ${report.summary.high}`)} | ` +
-      `${pc.yellow(`Medium: ${report.summary.medium}`)} | ` +
-      `${pc.cyan(`Low: ${report.summary.low}`)}`
-  );
+    `${pc.red(`Critical: ${report.summary.critical}`)} | ` +
+    `${pc.red(`High: ${report.summary.high}`)} | ` +
+    `${pc.yellow(`Medium: ${report.summary.medium}`)} | ` +
+    `${pc.cyan(`Low: ${report.summary.low}`)}`;
+
+  if (report.summary.totalFilesScanned !== undefined) {
+    summaryLine += `\n  Total Berkas: ${report.summary.totalFilesScanned} | ` +
+      `${pc.green(`Clean: ${report.summary.cleanFilesCount}`)} | ` +
+      `${report.summary.vulnerableFilesCount ? pc.red(`Vulnerable: ${report.summary.vulnerableFilesCount}`) : pc.dim("Vulnerable: 0")}`;
+  }
+  lines.push(summaryLine);
   lines.push(divider);
 
+  if (report.fileStatuses && report.fileStatuses.length > 0) {
+    lines.push(pc.bold("Status Pemeriksaan Berkas:"));
+    for (const fileStatus of report.fileStatuses) {
+      if (fileStatus.status === "VULNERABLE") {
+        lines.push(
+          `  ${pc.bgRed(pc.white(pc.bold(" VULN ")))}  ${pc.underline(fileStatus.file)} ` +
+            pc.red(`(${fileStatus.issueCount} temuan kerentanan)`)
+        );
+      } else {
+        lines.push(
+          `  ${pc.bgGreen(pc.black(pc.bold(" CLEAN ")))} ${pc.dim(fileStatus.file)} ` +
+            pc.green("(Aman - 0 kerentanan)")
+        );
+      }
+    }
+    lines.push(divider);
+  }
+
   if (report.issues.length === 0) {
-    lines.push(pc.green(pc.bold("✔ Tidak ditemukan masalah keamanan, runtime, atau kerentanan kode. Prima!")));
+    lines.push(pc.green(pc.bold("✔ Tidak ditemukan kerentanan kode, runtime error, atau celah keamanan. Bersih!")));
     lines.push("");
     return lines.join("\n");
   }
@@ -96,8 +120,8 @@ export function formatPretty(report: AuditReport): string {
   lines.push(divider);
   lines.push(
     report.status === "FAILED"
-      ? pc.red("Audit Selesai dengan Kegagalan. Perbaiki temuan prioritas CRITICAL & HIGH.")
-      : pc.green("Audit Selesai. Tinjau saran perbaikan untuk meningkatkan ketahanan dan keamanan website.")
+      ? pc.red("Audit Gagal. Perbaiki temuan berlabel [VULN] pada berkas di atas.")
+      : pc.green("Audit Selesai. Seluruh berkas dalam kondisi prima.")
   );
   lines.push("");
 

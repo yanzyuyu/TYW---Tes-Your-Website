@@ -1,98 +1,96 @@
 ---
 name: tyw-audit
 description: >-
-  MANDATORY: Execute during or immediately after creating, serving, or modifying ANY web page, web service, frontend component, or backend API prototype.
-  Autonomous Web Quality, Resilience & Security auditor using headless Playwright and Static Source Code scanner.
-  Executes automated deep audits on HTTP security headers, cookie lifecycle, browser console/runtime exceptions, form boundary fuzzing, client storage, and source code vulnerabilities (SQLi, XSS, secrets, dangerous functions).
-  Always load alongside human-coding for all web, frontend, backend API, and fullstack projects.
+  MANDATORY: Execute during or immediately after creating, serving, or modifying ANY codebase, software project, script, CLI tool, backend service, or web app.
+  Autonomous Universal Software Quality, Resilience & Security auditor using Headless Browser and Static Multi-Language Source Code scanner.
+  Executes automated deep audits on Command Injection, SQLi, XSS, Path Traversal, Buffer Overflows, Hardcoded Secrets, Insecure Deserialization, HTTP security headers, and runtime exceptions across Python, Go, Rust, C/C++, Java, Shell, PHP, and JS/TS.
+  Always load alongside human-coding for all software projects.
 ---
 
-# TYW Web & Source Code Auditor Skill (tyw-audit)
+# TYW Universal Software & Web Auditor Skill (tyw-audit)
 
-This skill guides AI agents to autonomously audit, diagnose, and remediate web security vulnerabilities, runtime exceptions, form boundary flaws, and source code vulnerabilities using the **TYW (Test Your Website)** CLI.
+This skill guides AI agents to autonomously audit, diagnose, and remediate code vulnerabilities and web flaws across **ALL programming languages and software projects** (CLI tools, automation scripts, backend APIs, systems code, and web applications) using the **TYW** CLI (`npx --yes tyw-cli`).
 
 ---
 
 ## 1. When to Trigger
 
 Always invoke this skill whenever:
-1. You finish building or refactoring any web page, backend service, or fullstack prototype (PHP, Node.js, Python, React, Vue, HTML/CSS).
-2. A local dev server is running or local source files exist.
-3. The user asks to audit, test, or verify the security and resilience of any web application or codebase.
+1. You finish building, editing, or refactoring ANY code or project (Python, Go, Rust, C/C++, Java, Shell, PHP, Node.js/TypeScript, HTML/CSS).
+2. The user asks to check, audit, test, or verify code security, vulnerability, or health.
+3. Before reporting task completion to the user on any software or web development task.
 
 ---
 
-## 2. Recommended Execution Command (Dual-Audit)
+## 2. Recommended Execution Commands
 
-Always run the unified audit combining **live browser testing** and **source code line scanning** with JSON output:
+Always run the scan with JSON format so you can parse the file list, clean vs vulnerable status, and exact issue line numbers:
 
 ```bash
-# Recommended: execute directly via npx without manual installation:
-npx tyw-cli audit <URL> --code ./ --format json
+# 1. For non-web projects or when no dev server is running (CLI tools, Python scripts, Go/Rust/C apps):
+npx --yes tyw-cli scan . --format json
 
-# If installed globally via npm (npm i -g tyw-cli):
-tyw-cli audit <URL> --code ./ --format json
-# (or 'tyw audit <URL> --code ./ --format json')
-
-# Or run via local binary in scratch directory:
-node C:/Users/MSI/.gemini/antigravity/scratch/TYW---Tes-Your-Website/bin/tyw.js audit <URL> --code ./ --format json
-
-# If only static code scan is needed (no live server running yet):
-npx tyw-cli scan ./ --format json
+# 2. For running web applications / dev servers (combines browser testing + source code scan):
+npx --yes tyw-cli audit <URL> --code . --format json
 ```
 
 ---
 
-## 3. Automated Remediation Playbook
+## 3. Interpreting Output & File Status
 
-When `status == "FAILED"` or issues are returned, immediately inspect the issues array and fix the exact files and lines:
+The output provides a clear breakdown of every file scanned:
+- **`summary.totalFilesScanned`**: Total count of code files examined.
+- **`summary.cleanFilesCount`**: Count of safe files (0 vulnerabilities).
+- **`summary.vulnerableFilesCount`**: Count of files containing detected vulnerabilities.
+- **`fileStatuses`**: List of each file marked as `"CLEAN"` or `"VULNERABLE"`.
 
-### A. Static Source Code Vulnerabilities (Exact File & Line)
-- **`CODE-SQLI-*` (SQL Injection Risk):**
-  - Locate `issue.file` and `issue.line`.
-  - Refactor raw string concatenation to prepared statements:
-    - PHP: `$stmt = $pdo->prepare('SELECT ... WHERE id = :id'); $stmt->execute(['id' => $id]);`
-    - Python: `cursor.execute('SELECT ... WHERE id = %s', (id,))`
-    - Node/TS: `db.query('SELECT ... WHERE id = $1', [id])`
-
-- **`CODE-XSS-*` (Cross-Site Scripting):**
-  - Locate `issue.file` and `issue.line`.
-  - PHP: Wrap output in `htmlspecialchars($input, ENT_QUOTES, 'UTF-8')`.
-  - JS/React: Replace `innerHTML` with `textContent` or sanitize with `DOMPurify.sanitize()`.
-
-- **`CODE-SECRET-HARDCODED`:**
-  - Remove plain secrets/API keys from source files. Load them via environment variables (`process.env.KEY`, `getenv('KEY')`, `os.environ.get('KEY')`).
-
-- **`CODE-EXEC-DANGEROUS-FN`:**
-  - Eliminate `eval()`, `shell_exec()`, `system()`, or `unserialize()`. Use typed handlers instead.
-
-### B. Live Web & Security Headers
-- **`SEC-CSP-MISSING` / `SEC-CSP-UNSAFE`:**
-  - Add `Content-Security-Policy` header to server responses:
-    ```
-    default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self';
-    ```
-- **`SEC-XFO-MISSING`:** Add `X-Frame-Options: SAMEORIGIN`.
-- **`SEC-HSTS-MISSING`:** Add `Strict-Transport-Security: max-age=31536000; includeSubDomains`.
-- **`SEC-XCTO-MISSING`:** Add `X-Content-Type-Options: nosniff`.
-- **`SEC-REFERRER-MISSING`:** Add `Referrer-Policy: strict-origin-when-cross-origin`.
-
-### C. Cookie & Session Security
-- Set `httpOnly: true`, `secure: true`, and `sameSite: "Lax"` (or `"Strict"`) on all session cookies.
-
-### D. Forms & Boundary Integrity
-- **`FORM-CSRF-MISSING`:** Add hidden CSRF token input on state-changing forms (`POST`, `PUT`, `DELETE`).
-- **`FORM-INPUT-UNBOUNDED` / `FORM-PWD-NO-MAXLENGTH`:** Add strict `maxlength` attributes to all form inputs.
-
-### E. Runtime & Hydration Errors
-- **`RUNTIME-CONSOLE-ERROR` / `RUNTIME-UNCAUGHT-EXCEPTION`:** Inspect logged error traces and add try-catch / Error Boundaries.
-- **`RUNTIME-HYDRATION-MISMATCH`:** Ensure server-rendered HTML matches browser DOM (avoid random/date mismatch in initial render).
+When reporting to the user, always highlight **which files are safe (Clean)** and **which files were vulnerable (and how you fixed them)**.
 
 ---
 
-## 4. The Verification Loop
+## 4. Automated Remediation Playbook (Multi-Language)
 
-After applying the fixes:
-1. Re-run `tyw audit <URL> --code ./ --format json`.
-2. Verify that `status == "PASSED"` and `score >= 90`.
-3. Do not declare the task finished until all `CRITICAL` and `HIGH` severity issues are eliminated.
+When issues are found, immediately locate `issue.file` and `issue.line` to apply the correct defensive fix:
+
+### A. Command Injection (`CODE-CMD-INJECT-*`)
+- **Python:** Replace `subprocess.run(cmd, shell=True)` with `subprocess.run(['cmd', arg1, arg2], shell=False)`. Avoid `os.system()`.
+- **Node.js:** Replace `child_process.exec()` with `child_process.execFile()` or `spawn()` with an argument array.
+- **Go:** Avoid `exec.Command("sh", "-c", ...)`. Execute the binary directly with isolated arguments.
+- **C/C++:** Replace `system()` or `popen()` with `execve` or `execvp`.
+- **Shell/Bash:** Avoid `eval $var`.
+
+### B. Insecure Deserialization (`CODE-DESERIALIZE-*`)
+- **Python:** Never use `pickle.loads()` on untrusted data. Use `json.loads()`. For YAML, use `yaml.safe_load()`.
+- **PHP:** Replace `unserialize()` with `json_decode()`.
+- **Java:** Avoid unvalidated `ObjectInputStream.readObject()`. Use JSON or Protobuf.
+
+### C. Path Traversal (`CODE-PATH-TRAVERSAL`)
+- Always normalize paths (e.g. `path.resolve`, `os.path.abspath`) and assert that the target path starts with the allowed base directory before performing file I/O.
+
+### D. Memory Safety (`CODE-MEM-BUFFER-OVERFLOW`)
+- **C/C++:** Replace `strcpy`, `strcat`, `gets`, and `sprintf` with bounded variants: `strncpy`, `strncat`, `fgets`, `snprintf`.
+
+### E. Weak Cryptography & Insecure Randomness (`CODE-WEAK-*`, `CODE-INSECURE-*`)
+- Replace MD5 and SHA-1 with SHA-256 for hashing, or Argon2id/bcrypt for passwords.
+- Replace `Math.random()` or `random.random()` with cryptographically secure generators (`crypto.randomBytes()`, `secrets.token_hex()`).
+
+### F. SQL Injection & XSS (`CODE-SQLI-*`, `CODE-XSS-*`)
+- Always use parameterized queries / prepared statements with parameter binding.
+- Sanitize and escape all user outputs (`htmlspecialchars` in PHP, `textContent` in DOM).
+
+### G. Hardcoded Secrets (`CODE-SECRET-HARDCODED`)
+- Remove raw API keys, passwords, and private tokens from source code. Load them from environment variables via `.env`.
+
+### H. Live Web Security (When Auditing Web Servers)
+- Add missing headers: `Content-Security-Policy`, `X-Frame-Options: SAMEORIGIN`, `X-Content-Type-Options: nosniff`.
+- Set cookie flags: `HttpOnly; Secure; SameSite=Lax`.
+- Ensure all forms have CSRF tokens and `maxlength` attributes on inputs.
+
+---
+
+## 5. The Verification Loop
+
+1. Run `npx --yes tyw-cli scan . --format json` (or audit).
+2. If any files are marked `VULNERABLE`, apply the fixes directly to the source code.
+3. Re-run the scan until `vulnerableFilesCount == 0` and status is `PASSED` (Score >= 90).
+4. Present the verified clean status to the user.

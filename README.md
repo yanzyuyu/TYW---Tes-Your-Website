@@ -120,6 +120,18 @@ Detail Temuan & Saran Remediasi:
 
 ---
 
+## Integrasi AI Agent (Skill)
+
+TYW dirancang sebagai tool deterministik yang dapat dikendalikan langsung oleh AI coding agent (Antigravity, Cursor, Claude Code, OpenCode).
+
+File spesifikasi skill disertakan di `skills/tyw-audit/SKILL.md`. Agen AI dapat dipandu untuk:
+1. Menjalankan audit secara otonom: `tyw audit <URL> --format json`.
+2. Menganalisis ID temuan (`SEC-CSP-MISSING`, `FORM-CSRF-MISSING`, `RUNTIME-CONSOLE-ERROR`).
+3. Menerapkan patch perbaikan secara mandiri pada source code aplikasi.
+4. Mengulang audit hingga mendapatkan status `PASSED` (Score >= 90).
+
+---
+
 ## Lisensi
 
 MIT License - Hak cipta (c) 2026 yanzyuyu.

@@ -6,6 +6,7 @@ dist/
 playwright-report/
 test-results/
 .cache/
+.npmrc
 .agents/
 .agent/
 _agents/

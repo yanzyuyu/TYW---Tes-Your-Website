@@ -1,12 +1,13 @@
 {
-  "name": "tyw",
-  "version": "0.1.0",
+  "name": "tyw-cli",
+  "version": "0.2.0",
   "type": "module",
   "description": "Test Your Website - Autonomous Web Quality, Resilience & Security CLI Auditor",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "tyw": "bin/tyw.js"
+    "tyw": "bin/tyw.js",
+    "tyw-cli": "bin/tyw.js"
   },
   "files": [
     "dist",
@@ -17,6 +18,10 @@
     "start": "node bin/tyw.js",
     "prepublishOnly": "npm run build"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yanzyuyu/TYW---Tes-Your-Website.git"
+  },
   "keywords": [
     "testing",
     "security",
@@ -24,10 +29,15 @@
     "audit",
     "fuzzing",
     "ai-agent",
-    "quality-assurance"
+    "quality-assurance",
+    "sast",
+    "dast"
   ],
   "author": "yanzyuyu",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "commander": "^13.1.0",
     "picocolors": "^1.1.1",

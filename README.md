@@ -122,15 +122,41 @@ Detail Temuan & Saran Remediasi:
 
 ---
 
-## Integrasi AI Agent (Skill)
+## Integrasi AI Agent & Slash Command
 
-TYW dirancang sebagai tool deterministik yang dapat dikendalikan langsung oleh AI coding agent (Antigravity, Cursor, Claude Code, OpenCode).
+TYW dirancang agar dapat dikendalikan langsung oleh AI coding agents (Google Antigravity, Cursor, Claude Code, OpenCode, Aider).
 
-File spesifikasi skill disertakan di `skills/tyw-audit/SKILL.md`. Agen AI dapat dipandu untuk:
-1. Menjalankan audit secara otonom: `tyw audit <URL> --format json`.
-2. Menganalisis ID temuan (`SEC-CSP-MISSING`, `FORM-CSRF-MISSING`, `RUNTIME-CONSOLE-ERROR`).
-3. Menerapkan patch perbaikan secara mandiri pada source code aplikasi.
-4. Mengulang audit hingga mendapatkan status `PASSED` (Score >= 90).
+### 1. Cara Otomatis (Via Skill)
+Pasang spesifikasi skill agar agen AI mengenali tool ini:
+- **Global AI Agent:** Salin folder `skills/tyw-audit` ke direktori global agent Anda (misal `~/.gemini/config/skills/tyw-audit/`).
+- **Per Proyek (Workspace):** Salin folder `skills/tyw-audit` ke `.agents/skills/tyw-audit/` di root repository proyek Anda.
+
+Dengan skill terpasang, agen AI akan otomatis menjalankan audit sebagai gerbang verifikasi sebelum menyatakan tugas selesai.
+
+---
+
+### 2. Cara Panggil Manual (Jika AI Belum Otomatis Menjalankan Audit)
+Jika agen AI di chat belum otomatis menjalankan audit, Anda cukup mengetikkan pemicu langsung di kolom chat:
+
+* **Menggunakan Slash Command / Mention Skill:**
+  ```text
+  /tyw-audit
+  ```
+  *(Atau: `@tyw-audit audit proyek ini`)*
+
+* **Menggunakan Prompt Singkat:**
+  > *"Tolong audit keamanan dan kualitas proyek ini pakai `npx --yes tyw-cli` lalu perbaiki jika ada temuan."*
+
+* **Alur Perintah yang Akan Dijalankan AI:**
+  1. **Audit cepat baris kode sumber (SAST):**
+     ```bash
+     npx --yes tyw-cli scan . --format json
+     ```
+  2. **Audit penuh (Web Browser live + Baris kode sumber):**
+     ```bash
+     npx --yes tyw-cli audit http://localhost:3000 --code . --format json
+     ```
+  3. AI membaca output JSON, menemukan file & nomor baris yang bermasalah, lalu memperbaiki kodenya secara mandiri hingga statusnya `PASSED`.
 
 ---
 

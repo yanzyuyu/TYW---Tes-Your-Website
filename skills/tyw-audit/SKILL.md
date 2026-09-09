@@ -26,14 +26,18 @@ Always invoke this skill whenever:
 Always run the unified audit combining **live browser testing** and **source code line scanning** with JSON output:
 
 ```bash
-# If dev server is running (e.g. localhost:8000) and code is in current workspace:
-tyw audit http://localhost:8000 --code ./ --format json
+# Recommended: execute directly via npx without manual installation:
+npx tyw-cli audit <URL> --code ./ --format json
 
-# Or run via local binary if not installed globally:
+# If installed globally via npm (npm i -g tyw-cli):
+tyw-cli audit <URL> --code ./ --format json
+# (or 'tyw audit <URL> --code ./ --format json')
+
+# Or run via local binary in scratch directory:
 node C:/Users/MSI/.gemini/antigravity/scratch/TYW---Tes-Your-Website/bin/tyw.js audit <URL> --code ./ --format json
 
 # If only static code scan is needed (no live server running yet):
-tyw scan ./ --format json
+npx tyw-cli scan ./ --format json
 ```
 
 ---

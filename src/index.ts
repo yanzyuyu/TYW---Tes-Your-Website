@@ -5,3 +5,4 @@ export * from "./auditors/headers.js";
 export * from "./auditors/runtime.js";
 export * from "./auditors/forms.js";
 export * from "./auditors/storage.js";
+export * from "./auditors/source_code.js";

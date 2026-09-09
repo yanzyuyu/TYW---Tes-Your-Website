@@ -7,7 +7,8 @@ export type IssueCategory =
   | "NETWORK_FAILURE"
   | "FORM_INTEGRITY"
   | "STORAGE"
-  | "HYDRATION";
+  | "HYDRATION"
+  | "STATIC_CODE";
 
 export interface AuditIssue {
   id: string;
@@ -18,6 +19,9 @@ export interface AuditIssue {
   remediation: string;
   evidence?: string;
   location?: string;
+  file?: string;
+  line?: number;
+  codeSnippet?: string;
 }
 
 export interface AuditConfig {
@@ -27,6 +31,7 @@ export interface AuditConfig {
   profile: "full" | "security" | "forms" | "runtime";
   format: "pretty" | "json";
   outputFile?: string;
+  codeDir?: string;
 }
 
 export interface PageMetadata {
@@ -38,7 +43,8 @@ export interface PageMetadata {
 }
 
 export interface AuditReport {
-  url: string;
+  url?: string;
+  codeDir?: string;
   timestamp: string;
   durationMs: number;
   score: number;
@@ -51,6 +57,6 @@ export interface AuditReport {
     low: number;
     info: number;
   };
-  metadata: PageMetadata;
+  metadata?: PageMetadata;
   issues: AuditIssue[];
 }

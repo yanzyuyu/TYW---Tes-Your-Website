@@ -31,13 +31,22 @@ export function formatPretty(report: AuditReport): string {
   const divider = pc.dim("─".repeat(64));
 
   lines.push("");
-  lines.push(pc.bold(pc.cyan("=== TYW: Test Your Website - Autonomous Web Auditor ===")));
+  lines.push(pc.bold(pc.cyan("=== TYW: Test Your Website - Autonomous Auditor ===")));
   lines.push(divider);
-  lines.push(`${pc.bold("Target URL:")}     ${report.url}`);
-  lines.push(`${pc.bold("Page Title:")}     ${report.metadata.title || "(Untitled)"}`);
-  lines.push(
-    `${pc.bold("Response:")}       ${report.metadata.statusCode} (${report.metadata.protocol}) in ${report.durationMs}ms`
-  );
+  if (report.url) {
+    lines.push(`${pc.bold("Target URL:")}     ${report.url}`);
+  }
+  if (report.codeDir) {
+    lines.push(`${pc.bold("Source Dir:")}     ${report.codeDir}`);
+  }
+  if (report.metadata) {
+    lines.push(`${pc.bold("Page Title:")}     ${report.metadata.title || "(Untitled)"}`);
+    lines.push(
+      `${pc.bold("Response:")}       ${report.metadata.statusCode} (${report.metadata.protocol}) in ${report.durationMs}ms`
+    );
+  } else {
+    lines.push(`${pc.bold("Duration:")}       ${report.durationMs}ms`);
+  }
   lines.push(`${pc.bold("Overall Status:")} ${getStatusBadge(report.status, report.score)}`);
   lines.push(divider);
 
@@ -52,7 +61,7 @@ export function formatPretty(report: AuditReport): string {
   lines.push(divider);
 
   if (report.issues.length === 0) {
-    lines.push(pc.green(pc.bold("✔ Tidak ditemukan masalah keamanan atau runtime. Website prima!")));
+    lines.push(pc.green(pc.bold("✔ Tidak ditemukan masalah keamanan, runtime, atau kerentanan kode. Prima!")));
     lines.push("");
     return lines.join("\n");
   }
@@ -67,11 +76,17 @@ export function formatPretty(report: AuditReport): string {
 
   for (const issue of sortedIssues) {
     lines.push(`${getSeverityBadge(issue.severity)} ${pc.bold(issue.title)} [${pc.dim(issue.id)}]`);
-    if (issue.location) {
+    if (issue.file && issue.line) {
+      lines.push(`  ${pc.bold(pc.yellow("Baris Kode:"))}  ${pc.underline(`${issue.file}:${issue.line}`)}`);
+      if (issue.codeSnippet) {
+        lines.push(`  ${pc.dim("Snippet:")}     ${pc.bgBlack(pc.red(` ${issue.codeSnippet} `))}`);
+      }
+    } else if (issue.location) {
       lines.push(`  ${pc.dim("Lokasi:")}      ${pc.underline(issue.location)}`);
     }
+
     lines.push(`  ${pc.dim("Deskripsi:")}   ${issue.description}`);
-    if (issue.evidence) {
+    if (issue.evidence && !issue.codeSnippet) {
       lines.push(`  ${pc.dim("Bukti:")}       ${pc.yellow(issue.evidence)}`);
     }
     lines.push(`  ${pc.dim("Perbaikan:")}   ${pc.green(issue.remediation)}`);
@@ -82,7 +97,7 @@ export function formatPretty(report: AuditReport): string {
   lines.push(
     report.status === "FAILED"
       ? pc.red("Audit Selesai dengan Kegagalan. Perbaiki temuan prioritas CRITICAL & HIGH.")
-      : pc.green("Audit Selesai. Tinjau saran perbaikan untuk meningkatkan ketahanan website.")
+      : pc.green("Audit Selesai. Tinjau saran perbaikan untuk meningkatkan ketahanan dan keamanan website.")
   );
   lines.push("");
 

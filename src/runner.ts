@@ -4,6 +4,7 @@ import { auditHeadersAndCookies } from "./auditors/headers.js";
 import { createRuntimeCollector, evaluateRuntimeIssues } from "./auditors/runtime.js";
 import { auditFormsAndInputs } from "./auditors/forms.js";
 import { auditClientStorage } from "./auditors/storage.js";
+import { scanSourceDirectory } from "./auditors/source_code.js";
 
 function calculateScore(issues: AuditIssue[]): { score: number; status: "PASSED" | "FAILED" | "WARNING" } {
   let penalty = 0;
@@ -39,8 +40,41 @@ function calculateScore(issues: AuditIssue[]): { score: number; status: "PASSED"
   return { score: rawScore, status };
 }
 
+export async function runCodeScanOnly(targetDir: string): Promise<AuditReport> {
+  const startTime = Date.now();
+  const issues = await scanSourceDirectory(targetDir);
+  const durationMs = Date.now() - startTime;
+  const { score, status } = calculateScore(issues);
+
+  const summary = {
+    total: issues.length,
+    critical: issues.filter((i) => i.severity === "CRITICAL").length,
+    high: issues.filter((i) => i.severity === "HIGH").length,
+    medium: issues.filter((i) => i.severity === "MEDIUM").length,
+    low: issues.filter((i) => i.severity === "LOW").length,
+    info: issues.filter((i) => i.severity === "INFO").length
+  };
+
+  return {
+    codeDir: targetDir,
+    timestamp: new Date().toISOString(),
+    durationMs,
+    score,
+    status,
+    summary,
+    issues
+  };
+}
+
 export async function runAudit(config: AuditConfig): Promise<AuditReport> {
   const startTime = Date.now();
+  const allIssues: AuditIssue[] = [];
+
+  if (config.codeDir) {
+    const codeIssues = await scanSourceDirectory(config.codeDir);
+    allIssues.push(...codeIssues);
+  }
+
   const browser = await chromium.launch({
     headless: config.headless
   });
@@ -61,8 +95,6 @@ export async function runAudit(config: AuditConfig): Promise<AuditReport> {
     protocol: "",
     contentType: ""
   };
-
-  const allIssues: AuditIssue[] = [];
 
   try {
     const response = await page.goto(config.url, {
@@ -131,6 +163,7 @@ export async function runAudit(config: AuditConfig): Promise<AuditReport> {
 
   return {
     url: config.url,
+    codeDir: config.codeDir,
     timestamp: new Date().toISOString(),
     durationMs,
     score,

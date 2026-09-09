@@ -43,38 +43,38 @@ npm run build
 
 ## Cara Penggunaan
 
-### 1. Audit Penuh (Default)
-Memeriksa security headers, runtime errors, forms, dan client storage sekaligus:
+### 1. Dual-Audit (Browser + Baris Kode Sumber Sekaligus)
+Menguji aplikasi web di browser sekaligus memindai baris demi baris kode sumber lokal (PHP, JS, TS, Python) untuk menemukan kerentanan SQLi, XSS, dan secrets:
+
+```bash
+tyw audit http://localhost:3000 --code ./src
+```
+
+### 2. Scan Kode Sumber Saja (SAST)
+Memindai file kode lokal tanpa membuka browser, langsung menampilkan nomor baris yang rawan:
+
+```bash
+tyw scan ./src
+```
+
+### 3. Audit Web Browser Saja (Default DAST)
+Memeriksa security headers, runtime errors, forms, dan client storage pada web yang sedang berjalan:
 
 ```bash
 tyw audit http://localhost:3000
 ```
 
-### 2. Output Format JSON (Untuk AI Agents)
+### 4. Output Format JSON (Untuk AI Agents)
 Hasilkan output JSON bersih yang dapat langsung diparsing oleh AI Agent (seperti Antigravity, Cursor, atau Claude Code) untuk auto-remediasi:
 
 ```bash
-tyw audit http://localhost:3000 --format json
+tyw audit http://localhost:3000 --code ./src --format json
 ```
 
-### 3. Profil Spesifik
-Jalankan pengujian pada area tertentu:
+### 5. Simpan Laporan ke File
 
 ```bash
-# Hanya audit keamanan (headers, cookies, storage)
-tyw audit http://localhost:3000 --profile security
-
-# Hanya audit form dan input boundaries
-tyw audit http://localhost:3000 --profile forms
-
-# Hanya audit console error, uncaught exception & hydration
-tyw audit http://localhost:3000 --profile runtime
-```
-
-### 4. Simpan Laporan ke File
-
-```bash
-tyw audit http://localhost:3000 -o audit-report.json --format json
+tyw audit http://localhost:3000 --code ./src -o audit-report.json --format json
 ```
 
 ---
